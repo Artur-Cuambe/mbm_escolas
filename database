@@ -1,0 +1,597 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema sis_stock
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema sis_stock
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `sis_stock` DEFAULT CHARACTER SET utf8 ;
+-- -----------------------------------------------------
+-- Schema sis_stock
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema sis_stock
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `sis_stock` DEFAULT CHARACTER SET latin1 ;
+USE `sis_stock` ;
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`curso`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`curso` (
+  `idcurso` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NULL,
+  `descricao` VARCHAR(100) NULL,
+  `created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` DATETIME NULL,
+  PRIMARY KEY (`idcurso`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`turma`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`turma` (
+  `idturma` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NULL,
+  `created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` DATETIME NULL,
+  PRIMARY KEY (`idturma`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`periodo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`periodo` (
+  `idperiodo` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NULL,
+  `descricao` VARCHAR(100) NULL,
+  ` created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` DATETIME NULL,
+  PRIMARY KEY (`idperiodo`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`categoria_disciplina`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`categoria_disciplina` (
+  `idcategoria_disciplina` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NULL,
+  `created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` DATETIME NULL,
+  PRIMARY KEY (`idcategoria_disciplina`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`disciplina`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`disciplina` (
+  `iddisciplina` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NULL,
+  `descricao` VARCHAR(100) NULL,
+  `created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` DATETIME NULL,
+  `categoria_disciplina_idcategoria_disciplina` INT NOT NULL,
+  PRIMARY KEY (`iddisciplina`),
+  INDEX `fk_disciplina_categoria_disciplina_idx` (`categoria_disciplina_idcategoria_disciplina` ASC) ,
+  CONSTRAINT `fk_disciplina_categoria_disciplina`
+    FOREIGN KEY (`categoria_disciplina_idcategoria_disciplina`)
+    REFERENCES `sis_stock`.`categoria_disciplina` (`idcategoria_disciplina`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`estudante`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`estudante` (
+  `idestudante` INT NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(45) NULL,
+  `genero` VARCHAR(45) NULL,
+  `data_nascimento` DATETIME NULL,
+  `documento` VARCHAR(45) NULL,
+  `numero_documento` VARCHAR(45) NULL,
+  `local_emissao` VARCHAR(45) NULL,
+  `data_emissao` DATETIME NULL,
+  `residencia` VARCHAR(45) NULL,
+  PRIMARY KEY (`idestudante`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`inscricao`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`inscricao` (
+  `idinscricao` INT NOT NULL AUTO_INCREMENT,
+  `turma_idturma` INT NOT NULL,
+  `periodo_idperiodo` INT NOT NULL,
+  `curso_idcurso` INT NOT NULL,
+  `estudante_idestudante` INT NOT NULL,
+  `processo` VARCHAR(45) NULL,
+  PRIMARY KEY (`idinscricao`),
+  INDEX `fk_inscricao_turma1_idx` (`turma_idturma` ASC) ,
+  INDEX `fk_inscricao_periodo1_idx` (`periodo_idperiodo` ASC) ,
+  INDEX `fk_inscricao_curso1_idx` (`curso_idcurso` ASC) ,
+  INDEX `fk_inscricao_estudante1_idx` (`estudante_idestudante` ASC) ,
+  CONSTRAINT `fk_inscricao_turma1`
+    FOREIGN KEY (`turma_idturma`)
+    REFERENCES `sis_stock`.`turma` (`idturma`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_inscricao_periodo1`
+    FOREIGN KEY (`periodo_idperiodo`)
+    REFERENCES `sis_stock`.`periodo` (`idperiodo`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_inscricao_curso1`
+    FOREIGN KEY (`curso_idcurso`)
+    REFERENCES `sis_stock`.`curso` (`idcurso`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_inscricao_estudante1`
+    FOREIGN KEY (`estudante_idestudante`)
+    REFERENCES `sis_stock`.`estudante` (`idestudante`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`inscricao_has_disciplina`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`inscricao_has_disciplina` (
+  `inscricao_idinscricao` INT NOT NULL,
+  `disciplina_iddisciplina` INT NOT NULL,
+  `nota` FLOAT NULL,
+  `observacao` VARCHAR(100) NULL,
+  `created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` DATETIME NULL,
+  PRIMARY KEY (`inscricao_idinscricao`, `disciplina_iddisciplina`),
+  INDEX `fk_inscricao_has_disciplina_disciplina1_idx` (`disciplina_iddisciplina` ASC) ,
+  INDEX `fk_inscricao_has_disciplina_inscricao1_idx` (`inscricao_idinscricao` ASC) ,
+  CONSTRAINT `fk_inscricao_has_disciplina_inscricao1`
+    FOREIGN KEY (`inscricao_idinscricao`)
+    REFERENCES `sis_stock`.`inscricao` (`idinscricao`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_inscricao_has_disciplina_disciplina1`
+    FOREIGN KEY (`disciplina_iddisciplina`)
+    REFERENCES `sis_stock`.`disciplina` (`iddisciplina`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`curso_has_disciplina`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`curso_has_disciplina` (
+  `curso_idcurso` INT NOT NULL,
+  `disciplina_iddisciplina` INT NOT NULL,
+  PRIMARY KEY (`curso_idcurso`, `disciplina_iddisciplina`),
+  INDEX `fk_curso_has_disciplina_disciplina1_idx` (`disciplina_iddisciplina` ASC) ,
+  INDEX `fk_curso_has_disciplina_curso1_idx` (`curso_idcurso` ASC) ,
+  CONSTRAINT `fk_curso_has_disciplina_curso1`
+    FOREIGN KEY (`curso_idcurso`)
+    REFERENCES `sis_stock`.`curso` (`idcurso`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_curso_has_disciplina_disciplina1`
+    FOREIGN KEY (`disciplina_iddisciplina`)
+    REFERENCES `sis_stock`.`disciplina` (`iddisciplina`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+USE `sis_stock` ;
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`empresa`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`empresa` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nuit` INT(11) NOT NULL,
+  `descricao` VARCHAR(255) NULL DEFAULT NULL,
+  `foto` VARCHAR(255) NULL DEFAULT NULL,
+  `rua` VARCHAR(255) NULL DEFAULT NULL,
+  `avenida` VARCHAR(255) NULL DEFAULT NULL,
+  `quarteirao_id` INT(11) NULL DEFAULT NULL,
+  `telefone` VARCHAR(25) NULL DEFAULT NULL,
+  `email` VARCHAR(255) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `nuit` (`nuit` ASC) )
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`departamento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`departamento` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `empresa_id` INT(11) NOT NULL,
+  `descricao` VARCHAR(255) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_departamento_empresa1_idx` (`empresa_id` ASC) ,
+  CONSTRAINT `fk_departamento_empresa1`
+    FOREIGN KEY (`empresa_id`)
+    REFERENCES `sis_stock`.`empresa` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 6
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`armazem`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`armazem` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `departamento_id` INT(11) NOT NULL,
+  `descricao` VARCHAR(255) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_armazem_departamento1_idx` (`departamento_id` ASC) ,
+  CONSTRAINT `fk_armazem_departamento1`
+    FOREIGN KEY (`departamento_id`)
+    REFERENCES `sis_stock`.`departamento` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`artigo`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`artigo` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `cod` VARCHAR(255) NOT NULL,
+  `nome` VARCHAR(255) NOT NULL,
+  `empresa_id` INT(11) NOT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `cod` (`cod` ASC) )
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`artigo_armazem`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`artigo_armazem` (
+  `nota_recepcao_entrada_id` INT(11) NOT NULL,
+  `id_artigo` INT(11) NOT NULL,
+  `id_armazem` INT(11) NOT NULL,
+  `validade` DATE NOT NULL,
+  `quantidade` INT(11) NOT NULL,
+  `iva` FLOAT NULL DEFAULT NULL,
+  `preco` DOUBLE NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  INDEX `id_armazem` (`id_armazem` ASC) ,
+  INDEX `id_artigo` (`id_artigo` ASC) ,
+  INDEX `nota_recepcao_id` (`nota_recepcao_entrada_id` ASC) ,
+  CONSTRAINT `artigo_armazem_ibfk_1`
+    FOREIGN KEY (`id_armazem`)
+    REFERENCES `sis_stock`.`armazem` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `artigo_armazem_ibfk_2`
+    FOREIGN KEY (`id_artigo`)
+    REFERENCES `sis_stock`.`artigo` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`bairros`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`bairros` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `localidade_id` INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 165
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`classes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`classes` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome_classe` VARCHAR(220) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = MyISAM
+AUTO_INCREMENT = 14
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`regioes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`regioes` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`provincias`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`provincias` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `regiao_id` INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `provincias_regiao_id_foreign` (`regiao_id` ASC) ,
+  CONSTRAINT `provincias_regiao_id_foreign`
+    FOREIGN KEY (`regiao_id`)
+    REFERENCES `sis_stock`.`regioes` (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 12
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`distritos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`distritos` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `provincia_id` INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `distritos_provincia_id_foreign` (`provincia_id` ASC) ,
+  CONSTRAINT `distritos_provincia_id_foreign`
+    FOREIGN KEY (`provincia_id`)
+    REFERENCES `sis_stock`.`provincias` (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 16
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`postos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`postos` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `distrito_id` INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `postos_distrito_id_foreign` (`distrito_id` ASC) ,
+  CONSTRAINT `postos_distrito_id_foreign`
+    FOREIGN KEY (`distrito_id`)
+    REFERENCES `sis_stock`.`distritos` (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 26
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`localidades`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`localidades` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(255) NOT NULL,
+  `posto_id` INT(10) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `localidades_posto_id_foreign` (`posto_id` ASC) ,
+  CONSTRAINT `localidades_posto_id_foreign`
+    FOREIGN KEY (`posto_id`)
+    REFERENCES `sis_stock`.`postos` (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 70
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`methodos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`methodos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome_method` VARCHAR(220) NULL DEFAULT NULL,
+  `nome_menu` VARCHAR(120) NULL DEFAULT NULL,
+  `obs` TEXT NULL DEFAULT NULL,
+  `icon` VARCHAR(255) NULL DEFAULT NULL,
+  `classe_id` INT(11) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = MyISAM
+AUTO_INCREMENT = 65
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`niveis_acessos`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`niveis_acessos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `departamento_id` INT(11) NOT NULL,
+  `nome_niveis_acesso` VARCHAR(45) NULL DEFAULT NULL,
+  `descricao` VARCHAR(255) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_niveis_acessos_departamento1_idx` (`departamento_id` ASC) ,
+  CONSTRAINT `fk_niveis_acessos_departamento1`
+    FOREIGN KEY (`departamento_id`)
+    REFERENCES `sis_stock`.`departamento` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`nota_recepcao`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`nota_recepcao` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `id_factura` VARCHAR(11) NOT NULL,
+  `id_armazem` INT(11) NOT NULL,
+  `nr_lote` VARCHAR(50) NULL DEFAULT NULL,
+  `created` DATETIME NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 12
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`nota_recepcao_entrada`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`nota_recepcao_entrada` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `id_nota_recepcao` INT(11) NOT NULL,
+  `quantidade_encomendada` INT(11) NOT NULL,
+  `quantidade_rebida` INT(11) NOT NULL,
+  `preco_compra` DOUBLE NOT NULL,
+  `preco_unitario` DOUBLE NOT NULL,
+  `unidade_medida_id` INT(11) NOT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 9
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`permissoes`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`permissoes` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `classe_id` INT(11) NULL DEFAULT NULL,
+  `methodo_id` INT(11) NULL DEFAULT NULL,
+  `niveis_acesso_id` INT(11) NULL DEFAULT NULL,
+  `situacao_permissao` INT(11) NULL DEFAULT NULL,
+  `menu` INT(11) NOT NULL DEFAULT '2',
+  `ordem` INT(11) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = MyISAM
+AUTO_INCREMENT = 364
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`povoado_aldeia_zona_unidade`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`povoado_aldeia_zona_unidade` (
+  `bairro_id` INT(10) UNSIGNED NOT NULL,
+  `nome` VARCHAR(255) NOT NULL,
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`),
+  INDEX `povoado_aldeia_zona_unidade_bairro_id_foreign` (`bairro_id` ASC) ,
+  CONSTRAINT `povoado_aldeia_zona_unidade_bairro_id_foreign`
+    FOREIGN KEY (`bairro_id`)
+    REFERENCES `sis_stock`.`bairros` (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 5040
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`situacoes_users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`situacoes_users` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome_sit_user` VARCHAR(255) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`unidade_medida`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`unidade_medida` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `descricao` VARCHAR(255) NOT NULL,
+  `created` DATETIME NULL DEFAULT NULL,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `sis_stock`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `sis_stock`.`users` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `situacoes_user_id` INT(11) NOT NULL,
+  `niveis_acesso_id` INT(11) NOT NULL,
+  `name` VARCHAR(220) NULL DEFAULT NULL,
+  `email` VARCHAR(220) NULL DEFAULT NULL,
+  `password` VARCHAR(220) NULL DEFAULT NULL,
+  `recuperar_senha` VARCHAR(220) NULL DEFAULT NULL,
+  `foto` VARCHAR(255) NULL DEFAULT NULL,
+  `estado` VARCHAR(11) NOT NULL DEFAULT 'Activo',
+  `created` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_users_niveis_acessos_idx` (`niveis_acesso_id` ASC) ,
+  INDEX `fk_users_situacoes_users1_idx` (`situacoes_user_id` ASC) ,
+  CONSTRAINT `fk_users_niveis_acessos`
+    FOREIGN KEY (`niveis_acesso_id`)
+    REFERENCES `sis_stock`.`niveis_acessos` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_users_situacoes_users1`
+    FOREIGN KEY (`situacoes_user_id`)
+    REFERENCES `sis_stock`.`situacoes_users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+AUTO_INCREMENT = 17
+DEFAULT CHARACTER SET = utf8;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
