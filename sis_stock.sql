@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 18, 2022 at 08:17 PM
+-- Generation Time: Nov 23, 2022 at 06:23 PM
 -- Server version: 5.7.16
 -- PHP Version: 5.6.26
 
@@ -93,7 +93,35 @@ INSERT INTO `artigo_armazem` (`nota_recepcao_entrada_id`, `id_artigo`, `id_armaz
 (2, 1, 2, '2020-06-08', 222, 17, 22, '2020-09-11 09:31:46', NULL),
 (3, 1, 2, '1970-01-01', 222, 17, 30, '2020-09-11 10:09:07', NULL),
 (4, 1, 2, '1970-01-01', 77, 0, 22, '2020-09-15 12:39:41', NULL),
+(8, 1, 3, '2020-06-08', 555, 0, 0, '2020-11-12 20:33:32', NULL),
+(1, 1, 2, '1970-01-01', 150, 17, 30, '2020-08-10 01:53:31', NULL),
+(2, 1, 2, '2020-06-08', 222, 17, 22, '2020-09-11 09:31:46', NULL),
+(3, 1, 2, '1970-01-01', 222, 17, 30, '2020-09-11 10:09:07', NULL),
+(4, 1, 2, '1970-01-01', 77, 0, 22, '2020-09-15 12:39:41', NULL),
 (8, 1, 3, '2020-06-08', 555, 0, 0, '2020-11-12 20:33:32', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `avaliacao`
+--
+
+CREATE TABLE `avaliacao` (
+  `id_avaliacao` int(11) NOT NULL,
+  `nome` varchar(45) NOT NULL,
+  `peso` int(11) NOT NULL,
+  `descricao` varchar(500) DEFAULT NULL,
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modified` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `avaliacao`
+--
+
+INSERT INTO `avaliacao` (`id_avaliacao`, `nome`, `peso`, `descricao`, `created`, `modified`) VALUES
+(1, 'Teste 1', 25, NULL, '2022-10-26 13:58:07', NULL),
+(2, 'Teste 2', 25, NULL, '2022-10-26 13:58:07', NULL);
 
 -- --------------------------------------------------------
 
@@ -285,6 +313,7 @@ INSERT INTO `bairros` (`id`, `nome`, `localidade_id`) VALUES
 
 CREATE TABLE `categoria_disciplina` (
   `idcategoria_disciplina` int(11) NOT NULL,
+  `departamento_id` int(11) NOT NULL,
   `nome` varchar(45) DEFAULT NULL,
   `created` datetime DEFAULT CURRENT_TIMESTAMP,
   `modified` datetime DEFAULT NULL
@@ -294,9 +323,9 @@ CREATE TABLE `categoria_disciplina` (
 -- Dumping data for table `categoria_disciplina`
 --
 
-INSERT INTO `categoria_disciplina` (`idcategoria_disciplina`, `nome`, `created`, `modified`) VALUES
-(1, 'Ciencia', '2022-11-18 13:00:50', NULL),
-(2, 'Letras', '2022-11-18 13:00:50', NULL);
+INSERT INTO `categoria_disciplina` (`idcategoria_disciplina`, `departamento_id`, `nome`, `created`, `modified`) VALUES
+(1, 1, 'Ciencia', '2022-11-18 13:00:50', NULL),
+(2, 1, 'Letras', '2022-11-18 13:00:50', NULL);
 
 -- --------------------------------------------------------
 
@@ -340,6 +369,7 @@ INSERT INTO `classes` (`id`, `nome_classe`, `created`, `modified`) VALUES
 
 CREATE TABLE `curso` (
   `idcurso` int(11) NOT NULL,
+  `departamento_id` int(11) NOT NULL,
   `nome` varchar(45) DEFAULT NULL,
   `descricao` varchar(100) DEFAULT NULL,
   `created` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -350,9 +380,9 @@ CREATE TABLE `curso` (
 -- Dumping data for table `curso`
 --
 
-INSERT INTO `curso` (`idcurso`, `nome`, `descricao`, `created`, `modified`) VALUES
-(1, '1 Classe ', NULL, '2022-11-18 12:56:37', NULL),
-(2, '2 Classe', NULL, '2022-11-18 12:56:37', NULL);
+INSERT INTO `curso` (`idcurso`, `departamento_id`, `nome`, `descricao`, `created`, `modified`) VALUES
+(1, 1, '1 Classe ', NULL, '2022-11-18 12:56:37', NULL),
+(2, 1, '2 Classe', NULL, '2022-11-18 12:56:37', NULL);
 
 -- --------------------------------------------------------
 
@@ -374,6 +404,29 @@ INSERT INTO `curso_has_disciplina` (`curso_idcurso`, `disciplina_iddisciplina`) 
 (2, 1),
 (1, 2),
 (2, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `curso_has_propina`
+--
+
+CREATE TABLE `curso_has_propina` (
+  `idcurso_has_propina` int(11) NOT NULL,
+  `curso_idcurso` int(11) NOT NULL,
+  `propina_idpropinas` int(11) NOT NULL,
+  `valor` float DEFAULT NULL,
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modified` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `curso_has_propina`
+--
+
+INSERT INTO `curso_has_propina` (`idcurso_has_propina`, `curso_idcurso`, `propina_idpropinas`, `valor`, `created`, `modified`) VALUES
+(1, 1, 1, 200, '2022-10-26 10:48:16', NULL),
+(2, 1, 2, 300, '2022-10-26 10:48:16', NULL);
 
 -- --------------------------------------------------------
 
@@ -492,15 +545,17 @@ INSERT INTO `empresa` (`id`, `nuit`, `descricao`, `foto`, `rua`, `avenida`, `qua
 CREATE TABLE `estudante` (
   `idestudante` int(11) NOT NULL,
   `nome` varchar(45) DEFAULT NULL,
-  `genero` varchar(45) DEFAULT NULL,
+  `genero` enum('Masculino','Feminino') NOT NULL,
   `data_nascimento` datetime DEFAULT NULL,
   `documento` varchar(45) DEFAULT NULL,
   `numero_documento` varchar(45) DEFAULT NULL,
   `local_emissao` varchar(45) DEFAULT NULL,
   `data_emissao` datetime DEFAULT NULL,
   `residencia` varchar(45) DEFAULT NULL,
-  `email` varchar(20) DEFAULT NULL,
+  `email` varchar(45) DEFAULT NULL,
   `telefone` varchar(12) DEFAULT NULL,
+  `estado_inscricao` varchar(20) DEFAULT 'Não inscrito',
+  `empresa_id` int(11) NOT NULL,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -509,11 +564,61 @@ CREATE TABLE `estudante` (
 -- Dumping data for table `estudante`
 --
 
-INSERT INTO `estudante` (`idestudante`, `nome`, `genero`, `data_nascimento`, `documento`, `numero_documento`, `local_emissao`, `data_emissao`, `residencia`, `email`, `telefone`, `created`, `modified`) VALUES
-(1, 'Estudante 1', 'Masculino', '2022-11-18 00:00:00', NULL, NULL, NULL, NULL, 'Maputo', 'root@whirelab.com', '849543940', '2022-11-18 15:16:34', '2022-11-18 18:16:03'),
-(2, 'Estudante 2', 'Feminino', NULL, NULL, NULL, NULL, NULL, 'Maputo', NULL, '849543940', '2022-11-18 15:16:34', '2022-11-18 18:20:28'),
-(3, 'Estudante 3', 'Masculino', NULL, NULL, NULL, NULL, NULL, 'Maputo', 'arturcuamb@gmail.com', '849543940', '2022-11-18 15:37:35', NULL),
-(4, 'Estudante 4', 'Masculino', NULL, NULL, NULL, NULL, NULL, 'Maputo', 'root@whirelab.com', '849543940', '2022-11-18 15:39:09', '2022-11-18 18:25:07');
+INSERT INTO `estudante` (`idestudante`, `nome`, `genero`, `data_nascimento`, `documento`, `numero_documento`, `local_emissao`, `data_emissao`, `residencia`, `email`, `telefone`, `estado_inscricao`, `empresa_id`, `created`, `modified`) VALUES
+(1, 'Estudante 1 estudante estudantye', 'Masculino', '2022-11-18 00:00:00', NULL, NULL, NULL, NULL, 'Maputo', 'root@whirelab.com', '849543940', 'Inscrição anulada', 0, '2022-11-18 15:16:34', '2022-10-25 02:52:19'),
+(2, 'Estudante 2', 'Masculino', NULL, NULL, NULL, NULL, NULL, 'Maputo', NULL, '849543940', 'Inscrito', 0, '2022-11-18 15:16:34', '2022-11-18 18:20:28'),
+(3, 'Estudante 3', 'Masculino', NULL, NULL, NULL, NULL, NULL, 'Maputo', 'arturcuamb@gmail.com', '849543940', 'Inscrito', 0, '2022-11-18 15:37:35', NULL),
+(4, 'Estudante 4', 'Masculino', NULL, NULL, NULL, NULL, NULL, 'Maputo', 'root@whirelab.com', '849543940', 'Inscrito', 0, '2022-11-18 15:39:09', '2022-11-18 18:25:07'),
+(8, 'Novo estudante', 'Feminino', NULL, NULL, NULL, NULL, NULL, 'fdsfst', 'arturcuambsdsad@gmail.com', '45463466', 'Não inscrito', 1, '2022-10-26 13:13:37', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `factura`
+--
+
+CREATE TABLE `factura` (
+  `idfactura` int(11) NOT NULL,
+  `curso_idcurso` int(11) NOT NULL,
+  `inscricao_idinscricao` int(11) NOT NULL,
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modified` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `factura`
+--
+
+INSERT INTO `factura` (`idfactura`, `curso_idcurso`, `inscricao_idinscricao`, `created`, `modified`) VALUES
+(1, 1, 1, '2022-10-26 10:46:43', NULL),
+(2, 1, 7, '2022-10-26 12:11:38', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `factura_has_propina`
+--
+
+CREATE TABLE `factura_has_propina` (
+  `idfactura_has_propina` int(11) NOT NULL,
+  `factura_idfactura` int(11) NOT NULL,
+  `idcurso_has_propina` int(11) NOT NULL,
+  `valor` float DEFAULT NULL,
+  `mes_factura` int(11) DEFAULT NULL,
+  `estado_pagamento` varchar(20) NOT NULL DEFAULT 'Não paga',
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modified` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `factura_has_propina`
+--
+
+INSERT INTO `factura_has_propina` (`idfactura_has_propina`, `factura_idfactura`, `idcurso_has_propina`, `valor`, `mes_factura`, `estado_pagamento`, `created`, `modified`) VALUES
+(1, 1, 1, 200, 11, 'Pago', '2022-10-26 10:49:23', NULL),
+(2, 1, 1, 300, 11, 'Pago', '2022-10-26 10:49:23', NULL),
+(3, 2, 1, 200, 11, 'Pago', '2022-10-26 12:12:16', NULL),
+(4, 2, 2, 300, 11, 'Pago', '2022-10-26 12:12:16', NULL);
 
 -- --------------------------------------------------------
 
@@ -527,16 +632,33 @@ CREATE TABLE `inscricao` (
   `periodo_idperiodo` int(11) NOT NULL,
   `curso_idcurso` int(11) NOT NULL,
   `estudante_idestudante` int(11) NOT NULL,
-  `processo` varchar(11) DEFAULT NULL
+  `processo` varchar(11) DEFAULT NULL,
+  `ano` int(11) NOT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `inscricao`
 --
 
-INSERT INTO `inscricao` (`idinscricao`, `turma_idturma`, `periodo_idperiodo`, `curso_idcurso`, `estudante_idestudante`, `processo`) VALUES
-(1, 1, 1, 1, 1, '0001'),
-(2, 2, 2, 2, 2, '0002');
+INSERT INTO `inscricao` (`idinscricao`, `turma_idturma`, `periodo_idperiodo`, `curso_idcurso`, `estudante_idestudante`, `processo`, `ano`, `created`, `modified`) VALUES
+(1, 1, 1, 1, 1, '0001', 2022, '2022-10-25 01:19:29', '2022-10-26 13:29:02'),
+(2, 3, 1, 2, 2, '0002', 2022, '2022-10-25 01:19:29', '2022-10-26 13:29:56'),
+(3, 3, 3, 1, 3, '0003', 2022, '2022-10-25 03:53:41', '2022-10-26 13:30:03'),
+(7, 1, 1, 1, 4, '0004', 2022, '2022-10-26 12:13:50', '2022-10-26 13:30:09');
+
+--
+-- Triggers `inscricao`
+--
+DELIMITER $$
+CREATE TRIGGER `update_estado_estudante_inscricao` AFTER INSERT ON `inscricao` FOR EACH ROW UPDATE estudante set estudante.estado_inscricao = 'Inscrito'  WHERE estudante.idestudante = NEW.estudante_idestudante
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_estado_estudante_inscricao_delete` AFTER DELETE ON `inscricao` FOR EACH ROW UPDATE estudante set estudante.estado_inscricao = 'Inscrição anulada'  WHERE estudante.idestudante = OLD.estudante_idestudante
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -545,9 +667,11 @@ INSERT INTO `inscricao` (`idinscricao`, `turma_idturma`, `periodo_idperiodo`, `c
 --
 
 CREATE TABLE `inscricao_has_disciplina` (
+  `id_nota` int(11) NOT NULL,
   `inscricao_idinscricao` int(11) NOT NULL,
   `disciplina_iddisciplina` int(11) NOT NULL,
   `nota` float DEFAULT NULL,
+  `avliacao_id` int(11) NOT NULL,
   `observacao` varchar(100) DEFAULT NULL,
   `created` datetime DEFAULT CURRENT_TIMESTAMP,
   `modified` datetime DEFAULT NULL
@@ -557,8 +681,9 @@ CREATE TABLE `inscricao_has_disciplina` (
 -- Dumping data for table `inscricao_has_disciplina`
 --
 
-INSERT INTO `inscricao_has_disciplina` (`inscricao_idinscricao`, `disciplina_iddisciplina`, `nota`, `observacao`, `created`, `modified`) VALUES
-(1, 1, 10, 'Mediano', '2022-11-18 13:56:46', NULL);
+INSERT INTO `inscricao_has_disciplina` (`id_nota`, `inscricao_idinscricao`, `disciplina_iddisciplina`, `nota`, `avliacao_id`, `observacao`, `created`, `modified`) VALUES
+(1, 1, 1, 10, 1, 'Mediano', '2022-11-18 13:56:46', NULL),
+(2, 1, 1, 10, 1, NULL, '2022-10-26 13:50:31', NULL);
 
 -- --------------------------------------------------------
 
@@ -835,6 +960,41 @@ INSERT INTO `nota_recepcao_entrada` (`id`, `id_nota_recepcao`, `quantidade_encom
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `pagamento`
+--
+
+CREATE TABLE `pagamento` (
+  `idpagamento` int(11) NOT NULL,
+  `valor` float DEFAULT NULL,
+  `forma_pagamento` varchar(45) DEFAULT NULL,
+  `idfactura_has_propina` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `pagamento`
+--
+
+INSERT INTO `pagamento` (`idpagamento`, `valor`, `forma_pagamento`, `idfactura_has_propina`) VALUES
+(4, 200, 'cash', 1),
+(5, 300, 'cash', 2),
+(6, 200, 'cash', 3),
+(7, 300, 'cash', 4);
+
+--
+-- Triggers `pagamento`
+--
+DELIMITER $$
+CREATE TRIGGER `estado_pagamento` AFTER INSERT ON `pagamento` FOR EACH ROW UPDATE factura_has_propina set factura_has_propina.estado_pagamento = 'Pago'  WHERE factura_has_propina.idfactura_has_propina = NEW.idfactura_has_propina
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `estado_pagamento_dell` AFTER DELETE ON `pagamento` FOR EACH ROW UPDATE factura_has_propina set factura_has_propina.estado_pagamento = 'Não paga'  WHERE factura_has_propina.idfactura_has_propina = OLD.idfactura_has_propina
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `periodo`
 --
 
@@ -880,109 +1040,109 @@ CREATE TABLE `permissoes` (
 INSERT INTO `permissoes` (`id`, `classe_id`, `methodo_id`, `niveis_acesso_id`, `situacao_permissao`, `menu`, `ordem`, `created`, `modified`) VALUES
 (1, 2, 1, 1, 1, 1, 2, '2020-07-27 15:00:26', '2020-11-12 20:41:12'),
 (2, 2, 1, 2, 2, 2, 1, '2020-07-27 15:00:26', NULL),
-(3, 2, 2, 1, 1, 2, 5, '2020-07-27 15:00:26', '2022-11-18 15:05:21'),
+(3, 2, 2, 1, 1, 2, 6, '2020-07-27 15:00:26', '2022-10-25 01:35:51'),
 (4, 2, 2, 2, 2, 2, 2, '2020-07-27 15:00:26', NULL),
-(5, 2, 3, 1, 1, 2, 6, '2020-07-27 15:00:26', '2022-11-18 15:05:19'),
+(5, 2, 3, 1, 1, 2, 7, '2020-07-27 15:00:26', '2022-10-25 01:35:47'),
 (6, 2, 3, 2, 2, 2, 3, '2020-07-27 15:00:26', NULL),
-(7, 2, 4, 1, 1, 2, 7, '2020-07-27 15:00:26', '2022-11-18 15:05:15'),
+(7, 2, 4, 1, 1, 2, 8, '2020-07-27 15:00:26', '2022-10-25 01:35:46'),
 (8, 2, 4, 2, 2, 2, 4, '2020-07-27 15:00:26', NULL),
-(9, 2, 5, 1, 1, 2, 9, '2020-07-27 15:00:26', '2022-11-18 15:05:11'),
+(9, 2, 5, 1, 1, 2, 10, '2020-07-27 15:00:26', '2022-10-25 01:35:43'),
 (10, 2, 5, 2, 2, 2, 5, '2020-07-27 15:00:26', NULL),
 (11, 3, 6, 1, 1, 1, 1, '2020-07-27 15:00:26', '2020-07-27 16:33:18'),
 (12, 3, 6, 2, 2, 2, 6, '2020-07-27 15:00:26', NULL),
-(13, 4, 7, 1, 1, 2, 11, '2020-07-27 15:00:26', '2022-11-18 15:05:04'),
+(13, 4, 7, 1, 1, 2, 12, '2020-07-27 15:00:26', '2022-10-25 01:35:32'),
 (14, 4, 7, 2, 2, 2, 7, '2020-07-27 15:00:26', NULL),
-(15, 4, 8, 1, 1, 2, 15, '2020-07-27 15:00:26', '2022-11-18 15:04:56'),
+(15, 4, 8, 1, 1, 2, 16, '2020-07-27 15:00:26', '2022-10-25 01:35:29'),
 (16, 4, 8, 2, 2, 2, 8, '2020-07-27 15:00:26', NULL),
-(17, 4, 9, 1, 1, 2, 16, '2020-07-27 15:00:26', '2022-11-18 15:04:54'),
+(17, 4, 9, 1, 1, 2, 17, '2020-07-27 15:00:26', '2022-10-25 01:35:27'),
 (18, 4, 9, 2, 1, 2, 9, '2020-07-27 15:00:26', NULL),
-(19, 4, 10, 1, 1, 2, 17, '2020-07-27 15:00:26', '2022-11-18 15:04:50'),
+(19, 4, 10, 1, 1, 2, 18, '2020-07-27 15:00:26', '2022-10-25 01:35:26'),
 (20, 4, 10, 2, 1, 2, 10, '2020-07-27 15:00:26', NULL),
-(21, 4, 11, 1, 1, 2, 18, '2020-07-27 15:00:26', '2022-11-18 15:04:44'),
+(21, 4, 11, 1, 1, 2, 19, '2020-07-27 15:00:26', '2022-10-25 01:35:26'),
 (22, 4, 11, 2, 2, 2, 11, '2020-07-27 15:00:26', NULL),
-(23, 4, 12, 1, 1, 2, 14, '2020-07-27 15:00:26', '2022-11-18 15:04:57'),
+(23, 4, 12, 1, 1, 2, 15, '2020-07-27 15:00:26', '2022-10-25 01:35:30'),
 (24, 4, 12, 2, 2, 2, 12, '2020-07-27 15:00:26', NULL),
-(25, 4, 13, 1, 1, 2, 19, '2020-07-27 15:00:26', '2022-11-18 15:04:41'),
+(25, 4, 13, 1, 1, 2, 20, '2020-07-27 15:00:26', '2022-10-25 01:35:25'),
 (26, 4, 13, 2, 2, 2, 13, '2020-07-27 15:00:26', NULL),
-(27, 4, 14, 1, 1, 2, 20, '2020-07-27 15:00:26', '2022-11-18 15:04:36'),
+(27, 4, 14, 1, 1, 2, 21, '2020-07-27 15:00:26', '2022-10-25 01:35:24'),
 (28, 4, 14, 2, 2, 2, 14, '2020-07-27 15:00:26', NULL),
-(29, 5, 15, 1, 1, 2, 21, '2020-07-27 15:00:26', '2022-11-18 15:04:32'),
+(29, 5, 15, 1, 1, 2, 22, '2020-07-27 15:00:26', '2022-10-25 01:35:23'),
 (30, 5, 15, 2, 2, 2, 15, '2020-07-27 15:00:26', NULL),
-(31, 5, 16, 1, 1, 2, 22, '2020-07-27 15:00:26', '2022-11-18 15:04:28'),
+(31, 5, 16, 1, 1, 2, 23, '2020-07-27 15:00:26', '2022-10-25 01:35:22'),
 (32, 5, 16, 2, 2, 2, 16, '2020-07-27 15:00:26', NULL),
-(33, 5, 17, 1, 1, 2, 23, '2020-07-27 15:00:26', '2022-11-18 15:04:23'),
+(33, 5, 17, 1, 1, 2, 24, '2020-07-27 15:00:26', '2022-10-25 01:35:18'),
 (34, 5, 17, 2, 2, 2, 17, '2020-07-27 15:00:26', NULL),
-(35, 6, 18, 1, 1, 2, 24, '2020-07-27 15:00:26', '2022-11-18 15:04:18'),
+(35, 6, 18, 1, 1, 2, 25, '2020-07-27 15:00:26', '2022-10-25 01:35:16'),
 (36, 6, 18, 2, 2, 2, 18, '2020-07-27 15:00:26', NULL),
-(37, 7, 19, 1, 1, 1, 12, '2020-07-27 15:00:26', '2022-11-18 15:05:03'),
+(37, 7, 19, 1, 1, 1, 13, '2020-07-27 15:00:26', '2022-10-25 01:35:31'),
 (38, 7, 19, 2, 2, 2, 19, '2020-07-27 15:00:26', NULL),
-(39, 7, 20, 1, 1, 2, 25, '2020-07-27 15:00:26', '2022-11-18 15:04:14'),
+(39, 7, 20, 1, 1, 2, 26, '2020-07-27 15:00:26', '2022-10-25 01:35:15'),
 (40, 7, 20, 2, 2, 2, 20, '2020-07-27 15:00:26', NULL),
-(41, 7, 21, 1, 1, 2, 26, '2020-07-27 15:00:26', '2022-11-18 15:04:09'),
+(41, 7, 21, 1, 1, 2, 27, '2020-07-27 15:00:26', '2022-10-25 01:35:08'),
 (42, 7, 21, 2, 2, 2, 21, '2020-07-27 15:00:26', NULL),
-(43, 7, 22, 1, 1, 2, 27, '2020-07-27 15:00:26', '2022-11-18 15:04:05'),
+(43, 7, 22, 1, 1, 2, 28, '2020-07-27 15:00:26', '2022-10-25 01:35:06'),
 (44, 7, 22, 2, 2, 2, 22, '2020-07-27 15:00:26', NULL),
-(45, 7, 23, 1, 1, 2, 28, '2020-07-27 15:00:26', '2022-11-18 15:04:00'),
+(45, 7, 23, 1, 1, 2, 29, '2020-07-27 15:00:26', '2022-10-25 01:35:05'),
 (46, 7, 23, 2, 2, 2, 23, '2020-07-27 15:00:26', NULL),
-(47, 8, 24, 1, 1, 2, 29, '2020-07-27 15:00:26', '2022-11-18 15:03:56'),
+(47, 8, 24, 1, 1, 2, 30, '2020-07-27 15:00:26', '2022-10-25 01:34:59'),
 (48, 8, 24, 2, 2, 2, 24, '2020-07-27 15:00:26', NULL),
-(49, 8, 25, 1, 1, 2, 30, '2020-07-27 15:00:26', '2022-11-18 15:03:51'),
+(49, 8, 25, 1, 1, 2, 31, '2020-07-27 15:00:26', '2022-10-25 01:34:58'),
 (50, 8, 25, 2, 2, 2, 25, '2020-07-27 15:00:26', NULL),
-(51, 8, 26, 1, 1, 2, 32, '2020-07-27 15:00:26', '2022-11-18 15:03:38'),
+(51, 8, 26, 1, 1, 2, 33, '2020-07-27 15:00:26', '2022-10-25 01:34:56'),
 (52, 8, 26, 2, 2, 2, 26, '2020-07-27 15:00:26', NULL),
-(53, 8, 27, 1, 1, 2, 31, '2020-07-27 15:00:26', '2022-11-18 15:03:47'),
+(53, 8, 27, 1, 1, 2, 32, '2020-07-27 15:00:26', '2022-10-25 01:34:57'),
 (54, 8, 27, 2, 2, 2, 27, '2020-07-27 15:00:26', NULL),
-(55, 8, 28, 1, 1, 2, 33, '2020-07-27 15:00:26', '2022-11-18 15:03:34'),
+(55, 8, 28, 1, 1, 2, 34, '2020-07-27 15:00:26', '2022-10-25 01:34:53'),
 (56, 8, 28, 2, 2, 2, 28, '2020-07-27 15:00:26', NULL),
-(57, 9, 29, 1, 1, 1, 13, '2020-07-27 15:00:26', '2022-11-18 15:05:00'),
+(57, 9, 29, 1, 1, 1, 14, '2020-07-27 15:00:26', '2022-10-25 01:35:30'),
 (58, 9, 29, 2, 2, 2, 29, '2020-07-27 15:00:26', NULL),
-(59, 9, 30, 1, 1, 2, 34, '2020-07-27 15:00:26', '2022-11-18 15:03:30'),
+(59, 9, 30, 1, 1, 2, 35, '2020-07-27 15:00:26', '2022-10-25 01:34:52'),
 (60, 9, 30, 2, 2, 2, 30, '2020-07-27 15:00:26', NULL),
-(61, 9, 31, 1, 1, 2, 35, '2020-07-27 15:00:26', '2022-11-18 15:03:25'),
+(61, 9, 31, 1, 1, 2, 36, '2020-07-27 15:00:26', '2022-10-25 01:34:51'),
 (62, 9, 31, 2, 2, 2, 31, '2020-07-27 15:00:26', NULL),
-(63, 9, 32, 1, 1, 2, 36, '2020-07-27 15:00:26', '2022-11-18 15:03:21'),
+(63, 9, 32, 1, 1, 2, 37, '2020-07-27 15:00:26', '2022-10-25 01:34:50'),
 (64, 9, 32, 2, 2, 2, 32, '2020-07-27 15:00:26', NULL),
-(65, 9, 33, 1, 1, 2, 37, '2020-07-27 15:00:26', '2022-11-18 15:03:18'),
+(65, 9, 33, 1, 1, 2, 38, '2020-07-27 15:00:26', '2022-10-25 01:34:49'),
 (66, 9, 33, 2, 2, 2, 33, '2020-07-27 15:00:26', NULL),
-(67, 9, 34, 1, 1, 2, 38, '2020-07-27 15:00:26', '2022-11-18 15:03:14'),
+(67, 9, 34, 1, 1, 2, 39, '2020-07-27 15:00:26', '2022-10-25 01:34:49'),
 (68, 9, 34, 2, 2, 2, 34, '2020-07-27 15:00:26', NULL),
-(69, 9, 35, 1, 1, 2, 39, '2020-07-27 15:00:26', '2022-11-18 15:03:10'),
+(69, 9, 35, 1, 1, 2, 40, '2020-07-27 15:00:26', '2022-10-25 01:34:48'),
 (70, 9, 35, 2, 2, 2, 35, '2020-07-27 15:00:26', NULL),
-(71, 1, 36, 1, 1, 1, 4, '2020-07-27 15:23:48', '2022-11-18 15:05:23'),
+(71, 1, 36, 1, 1, 1, 5, '2020-07-27 15:23:48', '2022-10-25 01:35:53'),
 (72, 1, 36, 2, 2, 2, 36, '2020-07-27 15:23:48', NULL),
-(73, 1, 37, 1, 1, 2, 40, '2020-07-27 15:23:48', '2022-11-18 15:03:05'),
+(73, 1, 37, 1, 1, 2, 41, '2020-07-27 15:23:48', '2022-10-25 01:34:47'),
 (74, 1, 37, 2, 2, 2, 37, '2020-07-27 15:23:48', NULL),
-(75, 1, 38, 1, 1, 2, 41, '2020-07-27 15:23:48', '2022-11-18 15:03:01'),
+(75, 1, 38, 1, 1, 2, 42, '2020-07-27 15:23:48', '2022-10-25 01:34:46'),
 (76, 1, 38, 2, 2, 2, 38, '2020-07-27 15:23:48', NULL),
-(77, 1, 39, 1, 1, 2, 43, '2020-07-27 15:23:48', '2022-11-18 15:02:53'),
+(77, 1, 39, 1, 1, 2, 44, '2020-07-27 15:23:48', '2022-10-25 01:34:25'),
 (78, 1, 39, 2, 2, 2, 39, '2020-07-27 15:23:48', NULL),
-(79, 1, 40, 1, 1, 2, 42, '2020-07-27 15:23:48', '2022-11-18 15:02:57'),
+(79, 1, 40, 1, 1, 2, 43, '2020-07-27 15:23:48', '2022-10-25 01:34:44'),
 (80, 1, 40, 2, 2, 2, 40, '2020-07-27 15:23:48', NULL),
-(81, 1, 41, 1, 1, 2, 44, '2020-07-27 15:23:48', '2022-11-18 15:02:48'),
+(81, 1, 41, 1, 1, 2, 45, '2020-07-27 15:23:48', '2022-10-25 01:34:24'),
 (82, 1, 41, 2, 2, 2, 41, '2020-07-27 15:23:48', NULL),
-(83, 10, 42, 1, 1, 2, 10, '2020-07-27 16:03:07', '2022-11-18 15:05:07'),
+(83, 10, 42, 1, 1, 2, 11, '2020-07-27 16:03:07', '2022-10-25 01:35:34'),
 (84, 10, 42, 2, 2, 2, 42, '2020-07-27 16:03:07', '2020-07-30 16:43:51'),
-(85, 10, 43, 1, 1, 2, 45, '2020-07-27 16:03:07', '2022-11-18 15:02:43'),
+(85, 10, 43, 1, 1, 2, 46, '2020-07-27 16:03:07', '2022-10-25 01:34:23'),
 (86, 10, 43, 2, 2, 2, 43, '2020-07-27 16:03:07', NULL),
-(87, 10, 44, 1, 1, 2, 46, '2020-07-27 16:03:07', '2022-11-18 15:02:39'),
+(87, 10, 44, 1, 1, 2, 47, '2020-07-27 16:03:07', '2022-10-25 01:34:11'),
 (88, 10, 44, 2, 2, 2, 44, '2020-07-27 16:03:07', NULL),
-(89, 10, 45, 1, 1, 2, 47, '2020-07-27 16:03:07', '2022-11-18 15:02:33'),
+(89, 10, 45, 1, 1, 2, 48, '2020-07-27 16:03:07', '2022-10-25 01:34:10'),
 (90, 10, 45, 2, 2, 2, 45, '2020-07-27 16:03:07', NULL),
-(91, 10, 46, 1, 1, 2, 48, '2020-07-27 16:03:07', '2022-11-18 15:02:28'),
+(91, 10, 46, 1, 1, 2, 49, '2020-07-27 16:03:07', '2022-10-25 01:34:09'),
 (92, 10, 46, 2, 2, 2, 46, '2020-07-27 16:03:07', NULL),
-(93, 10, 47, 1, 1, 2, 49, '2020-07-27 16:03:07', '2022-11-18 15:02:23'),
+(93, 10, 47, 1, 1, 2, 50, '2020-07-27 16:03:07', '2022-10-25 01:34:07'),
 (94, 10, 47, 2, 2, 2, 47, '2020-07-27 16:03:07', NULL),
-(95, 11, 48, 1, 1, 2, 50, '2020-07-28 21:39:11', '2022-11-18 15:02:19'),
+(95, 11, 48, 1, 1, 2, 51, '2020-07-28 21:39:11', '2022-10-25 01:34:05'),
 (96, 11, 48, 2, 2, 2, 48, '2020-07-28 21:39:11', NULL),
-(97, 11, 49, 1, 1, 2, 51, '2020-07-28 21:39:11', '2022-11-18 15:02:13'),
+(97, 11, 49, 1, 1, 2, 52, '2020-07-28 21:39:11', '2022-10-25 01:34:02'),
 (98, 11, 49, 2, 2, 2, 49, '2020-07-28 21:39:11', NULL),
-(99, 11, 50, 1, 1, 2, 52, '2020-07-28 21:39:11', '2022-11-18 15:01:54'),
+(99, 11, 50, 1, 1, 2, 53, '2020-07-28 21:39:11', '2022-10-25 01:33:57'),
 (100, 11, 50, 2, 2, 2, 50, '2020-07-28 21:39:11', NULL),
-(101, 11, 51, 1, 1, 2, 53, '2020-07-28 21:39:11', '2022-11-18 15:01:36'),
+(101, 11, 51, 1, 1, 2, 54, '2020-07-28 21:39:11', '2022-10-25 01:33:54'),
 (102, 11, 51, 2, 2, 2, 51, '2020-07-28 21:39:11', NULL),
-(103, 11, 52, 1, 1, 2, 54, '2020-07-28 21:39:11', '2022-11-18 15:01:27'),
+(103, 11, 52, 1, 1, 2, 55, '2020-07-28 21:39:11', '2022-10-25 01:33:42'),
 (104, 11, 52, 2, 2, 2, 52, '2020-07-28 21:39:11', NULL),
-(105, 9, 53, 1, 1, 2, 55, '2020-07-28 21:39:11', '2022-11-18 15:01:19'),
+(105, 9, 53, 1, 1, 2, 56, '2020-07-28 21:39:11', '2022-10-25 01:33:38'),
 (106, 9, 53, 2, 1, 2, 53, '2020-07-28 21:39:11', NULL),
 (107, 10, 42, 3, 2, 2, 1, '2020-07-28 22:05:46', NULL),
 (108, 10, 43, 3, 2, 2, 2, '2020-07-28 22:05:46', NULL),
@@ -1143,7 +1303,7 @@ INSERT INTO `permissoes` (`id`, `classe_id`, `methodo_id`, `niveis_acesso_id`, `
 (263, 9, 34, 5, 2, 2, 51, '2020-07-29 16:36:00', NULL),
 (264, 9, 35, 5, 2, 2, 52, '2020-07-29 16:36:00', NULL),
 (265, 9, 53, 5, 2, 2, 53, '2020-07-29 16:36:00', NULL),
-(266, 7, 54, 1, 1, 2, 56, '2020-07-30 16:31:55', '2022-11-18 15:01:14'),
+(266, 7, 54, 1, 1, 2, 57, '2020-07-30 16:31:55', '2022-10-25 01:33:33'),
 (267, 7, 54, 2, 2, 2, 54, '2020-07-30 16:31:55', NULL),
 (268, 7, 54, 3, 2, 2, 54, '2020-07-30 16:31:55', NULL),
 (269, 10, 42, 15, 2, 2, 1, '2020-07-30 21:37:46', NULL),
@@ -1200,33 +1360,33 @@ INSERT INTO `permissoes` (`id`, `classe_id`, `methodo_id`, `niveis_acesso_id`, `
 (320, 9, 34, 15, 2, 2, 52, '2020-07-30 21:37:46', NULL),
 (321, 9, 35, 15, 2, 2, 53, '2020-07-30 21:37:46', NULL),
 (322, 9, 53, 15, 2, 2, 54, '2020-07-30 21:37:46', NULL),
-(323, 12, 55, 1, 1, 2, 8, '2020-08-05 12:03:27', '2022-11-18 15:05:14'),
+(323, 12, 55, 1, 1, 2, 9, '2020-08-05 12:03:27', '2022-10-25 01:35:44'),
 (324, 12, 55, 2, 2, 2, 55, '2020-08-05 12:03:27', NULL),
 (325, 12, 55, 3, 2, 2, 55, '2020-08-05 12:03:27', NULL),
-(326, 12, 56, 1, 1, 2, 57, '2020-08-05 12:03:27', '2022-11-18 15:01:03'),
+(326, 12, 56, 1, 1, 2, 58, '2020-08-05 12:03:27', '2022-10-25 01:33:29'),
 (327, 12, 56, 2, 2, 2, 56, '2020-08-05 12:03:27', NULL),
 (328, 12, 56, 3, 2, 2, 56, '2020-08-05 12:03:27', NULL),
-(329, 12, 57, 1, 1, 2, 58, '2020-08-05 12:03:27', '2022-11-18 15:00:47'),
+(329, 12, 57, 1, 1, 2, 59, '2020-08-05 12:03:27', '2022-10-25 01:33:24'),
 (330, 12, 57, 2, 2, 2, 57, '2020-08-05 12:03:27', NULL),
 (331, 12, 57, 3, 2, 2, 57, '2020-08-05 12:03:27', NULL),
-(332, 12, 58, 1, 1, 2, 59, '2020-08-05 12:03:27', '2022-11-18 15:00:36'),
+(332, 12, 58, 1, 1, 2, 60, '2020-08-05 12:03:27', '2022-10-25 01:33:18'),
 (333, 12, 58, 2, 2, 2, 58, '2020-08-05 12:03:27', NULL),
 (334, 12, 58, 3, 2, 2, 58, '2020-08-05 12:03:27', NULL),
-(335, 12, 59, 1, 1, 2, 60, '2020-08-05 12:03:27', '2022-11-18 15:00:26'),
+(335, 12, 59, 1, 1, 2, 61, '2020-08-05 12:03:27', '2022-10-25 01:33:14'),
 (336, 12, 59, 2, 2, 2, 59, '2020-08-05 12:03:27', NULL),
 (337, 12, 59, 3, 2, 2, 59, '2020-08-05 12:03:27', NULL),
-(338, 12, 60, 1, 1, 2, 61, '2020-08-05 12:03:27', '2022-11-18 15:00:11'),
+(338, 12, 60, 1, 1, 2, 62, '2020-08-05 12:03:27', '2022-10-25 01:33:10'),
 (339, 12, 60, 2, 2, 2, 60, '2020-08-05 12:03:27', NULL),
 (340, 12, 60, 3, 2, 2, 60, '2020-08-05 12:03:27', NULL),
-(341, 10, 61, 1, 1, 2, 62, '2020-09-14 12:26:05', '2022-11-18 15:00:06'),
+(341, 10, 61, 1, 1, 2, 63, '2020-09-14 12:26:05', '2022-10-25 01:33:03'),
 (342, 10, 61, 2, 2, 2, 61, '2020-09-14 12:26:05', NULL),
 (343, 10, 61, 3, 2, 2, 61, '2020-09-14 12:26:05', NULL),
 (344, 10, 61, 4, 2, 2, 54, '2020-09-14 12:26:05', NULL),
-(345, 10, 62, 1, 1, 2, 63, '2020-09-14 12:26:05', '2022-11-18 14:59:45'),
+(345, 10, 62, 1, 1, 2, 64, '2020-09-14 12:26:05', '2022-10-25 01:32:59'),
 (346, 10, 62, 2, 2, 2, 62, '2020-09-14 12:26:05', NULL),
 (347, 10, 62, 3, 2, 2, 62, '2020-09-14 12:26:05', NULL),
 (348, 10, 62, 4, 2, 2, 55, '2020-09-14 12:26:05', NULL),
-(349, 10, 63, 1, 1, 2, 64, '2020-09-14 12:26:05', '2022-11-18 14:59:40'),
+(349, 10, 63, 1, 1, 2, 65, '2020-09-14 12:26:05', '2022-10-25 01:32:55'),
 (350, 10, 63, 2, 2, 2, 63, '2020-09-14 12:26:05', NULL),
 (351, 10, 63, 3, 2, 2, 63, '2020-09-14 12:26:05', NULL),
 (352, 10, 63, 4, 2, 2, 56, '2020-09-14 12:26:05', NULL),
@@ -1237,26 +1397,26 @@ INSERT INTO `permissoes` (`id`, `classe_id`, `methodo_id`, `niveis_acesso_id`, `
 (357, 12, 59, 4, 2, 2, 61, '2020-09-14 12:26:05', NULL),
 (358, 12, 60, 4, 2, 2, 62, '2020-09-14 12:26:05', NULL),
 (359, 7, 54, 4, 2, 2, 63, '2020-09-14 12:26:05', NULL),
-(360, 13, 64, 1, 1, 2, 65, '2020-09-14 12:26:05', '2022-11-18 14:59:29'),
+(360, 13, 64, 1, 1, 2, 66, '2020-09-14 12:26:05', '2022-10-25 01:32:52'),
 (361, 13, 64, 2, 2, 2, 64, '2020-09-14 12:26:05', NULL),
 (362, 13, 64, 3, 2, 2, 64, '2020-09-14 12:26:05', NULL),
 (363, 13, 64, 4, 2, 2, 64, '2020-09-14 12:26:05', NULL),
-(364, 14, 65, 1, 1, 1, 3, '2022-11-18 14:42:10', '2022-11-18 15:05:23'),
+(364, 14, 65, 1, 1, 1, 4, '2022-11-18 14:42:10', '2022-10-25 01:37:27'),
 (365, 14, 65, 2, 2, 2, 65, '2022-11-18 14:42:10', NULL),
 (366, 14, 65, 3, 2, 2, 65, '2022-11-18 14:42:10', NULL),
-(367, 14, 66, 1, 1, 2, 66, '2022-11-18 14:42:10', NULL),
+(367, 14, 66, 1, 1, 2, 67, '2022-11-18 14:42:10', '2022-10-25 01:32:48'),
 (368, 14, 66, 2, 2, 2, 66, '2022-11-18 14:42:10', NULL),
 (369, 14, 66, 3, 2, 2, 66, '2022-11-18 14:42:10', NULL),
-(370, 14, 67, 1, 1, 2, 67, '2022-11-18 14:42:10', NULL),
+(370, 14, 67, 1, 1, 2, 68, '2022-11-18 14:42:10', '2022-10-25 01:32:44'),
 (371, 14, 67, 2, 2, 2, 67, '2022-11-18 14:42:10', NULL),
 (372, 14, 67, 3, 2, 2, 67, '2022-11-18 14:42:10', NULL),
-(373, 14, 68, 1, 1, 2, 68, '2022-11-18 14:42:10', NULL),
+(373, 14, 68, 1, 1, 2, 69, '2022-11-18 14:42:10', '2022-10-25 01:32:39'),
 (374, 14, 68, 2, 2, 2, 68, '2022-11-18 14:42:10', NULL),
 (375, 14, 68, 3, 2, 2, 68, '2022-11-18 14:42:10', NULL),
-(376, 14, 69, 1, 1, 2, 69, '2022-11-18 14:42:10', NULL),
+(376, 14, 69, 1, 1, 2, 70, '2022-11-18 14:42:10', '2022-10-25 01:32:32'),
 (377, 14, 69, 2, 2, 2, 69, '2022-11-18 14:42:10', NULL),
 (378, 14, 69, 3, 2, 2, 69, '2022-11-18 14:42:10', NULL),
-(379, 15, 70, 1, 1, 1, 70, '2022-11-18 18:59:01', '2022-11-18 19:00:52'),
+(379, 15, 70, 1, 1, 1, 3, '2022-11-18 18:59:01', '2022-10-25 01:37:27'),
 (380, 15, 70, 2, 2, 2, 70, '2022-11-18 18:59:01', NULL),
 (381, 15, 70, 3, 2, 2, 70, '2022-11-18 18:59:01', NULL),
 (382, 15, 71, 1, 1, 2, 71, '2022-11-18 18:59:01', NULL),
@@ -6355,6 +6515,29 @@ INSERT INTO `povoado_aldeia_zona_unidade` (`bairro_id`, `nome`, `id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `propina`
+--
+
+CREATE TABLE `propina` (
+  `idpropinas` int(11) NOT NULL,
+  `nome` varchar(45) DEFAULT NULL,
+  `descricao` varchar(45) DEFAULT NULL,
+  `empresa_id` int(11) DEFAULT NULL,
+  `created` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modified` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `propina`
+--
+
+INSERT INTO `propina` (`idpropinas`, `nome`, `descricao`, `empresa_id`, `created`, `modified`) VALUES
+(1, 'Matricula', NULL, 1, '2022-10-26 10:24:16', NULL),
+(2, 'Mensalidade', NULL, 1, '2022-10-26 10:24:16', NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `provincias`
 --
 
@@ -6491,10 +6674,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `situacoes_user_id`, `niveis_acesso_id`, `name`, `email`, `password`, `recuperar_senha`, `foto`, `estado`, `created`, `modified`) VALUES
-(1, 1, 1, 'Arturs Cuambe', 'arturcuamb@gmail.com', '81dc9bdb52d04dc20036dbd8313ed055', '9eddd2e617cd3fe3b7644e1a6038e18c', 'me.jpg', 'Activo', '2016-12-01 18:15:40', '2022-11-16 22:46:37'),
-(14, 2, 1, 'Artur Cuambe', 'artu@gmail.com', '81dc9bdb52d04dc20036dbd8313ed055', NULL, 'images.png', 'Activo', '2020-07-31 13:38:47', '2020-11-12 20:42:00'),
-(15, 1, 3, 'nome', 'apagar@apagar.com', '81dc9bdb52d04dc20036dbd8313ed055', NULL, NULL, 'Activo', '2020-07-31 16:34:00', NULL),
-(16, 1, 1, 'Artur Cuambe', 'recepcionista@cinica.com', '81dc9bdb52d04dc20036dbd8313ed055', NULL, 'bi.jpg', 'Activo', '2020-09-14 16:29:21', '2020-09-21 17:15:33');
+(1, 1, 1, 'Artur Cuambe', 'arturcuamb@gmail.com', '81dc9bdb52d04dc20036dbd8313ed055', '9eddd2e617cd3fe3b7644e1a6038e18c', 'me.jpg', 'Activo', '2016-12-01 18:15:40', '2022-10-25 01:29:00'),
+(14, 2, 3, 'Utilizador', 'utilizador@gmail.com', '81dc9bdb52d04dc20036dbd8313ed055', NULL, 'images.png', 'Activo', '2020-07-31 13:38:47', '2022-10-25 01:39:14'),
+(15, 1, 3, 'Utilizador 1', 'utilizador1@apagar.com', '81dc9bdb52d04dc20036dbd8313ed055', NULL, NULL, 'Activo', '2020-07-31 16:34:00', '2022-10-25 01:41:25'),
+(16, 2, 3, 'Utilizador 2', 'utilizador2@cinica.com', '81dc9bdb52d04dc20036dbd8313ed055', NULL, 'bi.jpg', 'Activo', '2020-09-14 16:29:21', '2022-10-25 01:41:40');
 
 --
 -- Indexes for dumped tables
@@ -6523,6 +6706,12 @@ ALTER TABLE `artigo_armazem`
   ADD KEY `nota_recepcao_id` (`nota_recepcao_entrada_id`);
 
 --
+-- Indexes for table `avaliacao`
+--
+ALTER TABLE `avaliacao`
+  ADD PRIMARY KEY (`id_avaliacao`);
+
+--
 -- Indexes for table `bairros`
 --
 ALTER TABLE `bairros`
@@ -6532,7 +6721,8 @@ ALTER TABLE `bairros`
 -- Indexes for table `categoria_disciplina`
 --
 ALTER TABLE `categoria_disciplina`
-  ADD PRIMARY KEY (`idcategoria_disciplina`);
+  ADD PRIMARY KEY (`idcategoria_disciplina`),
+  ADD KEY `departamento_id` (`departamento_id`);
 
 --
 -- Indexes for table `classes`
@@ -6544,7 +6734,8 @@ ALTER TABLE `classes`
 -- Indexes for table `curso`
 --
 ALTER TABLE `curso`
-  ADD PRIMARY KEY (`idcurso`);
+  ADD PRIMARY KEY (`idcurso`),
+  ADD KEY `departamento_id` (`departamento_id`);
 
 --
 -- Indexes for table `curso_has_disciplina`
@@ -6553,6 +6744,14 @@ ALTER TABLE `curso_has_disciplina`
   ADD PRIMARY KEY (`curso_idcurso`,`disciplina_iddisciplina`),
   ADD KEY `fk_curso_has_disciplina_disciplina1_idx` (`disciplina_iddisciplina`),
   ADD KEY `fk_curso_has_disciplina_curso1_idx` (`curso_idcurso`);
+
+--
+-- Indexes for table `curso_has_propina`
+--
+ALTER TABLE `curso_has_propina`
+  ADD PRIMARY KEY (`idcurso_has_propina`),
+  ADD KEY `curso_idcurso` (`curso_idcurso`,`propina_idpropinas`),
+  ADD KEY `propina_idpropinas_fky` (`propina_idpropinas`);
 
 --
 -- Indexes for table `departamento`
@@ -6586,13 +6785,31 @@ ALTER TABLE `empresa`
 -- Indexes for table `estudante`
 --
 ALTER TABLE `estudante`
-  ADD PRIMARY KEY (`idestudante`);
+  ADD PRIMARY KEY (`idestudante`),
+  ADD KEY `empresa_id` (`empresa_id`);
+
+--
+-- Indexes for table `factura`
+--
+ALTER TABLE `factura`
+  ADD PRIMARY KEY (`idfactura`),
+  ADD KEY `curso_idcurso` (`curso_idcurso`,`inscricao_idinscricao`),
+  ADD KEY `inscricao_idinscricao` (`inscricao_idinscricao`);
+
+--
+-- Indexes for table `factura_has_propina`
+--
+ALTER TABLE `factura_has_propina`
+  ADD PRIMARY KEY (`idfactura_has_propina`),
+  ADD KEY `factura_idfactura` (`factura_idfactura`),
+  ADD KEY `idcurso_has_propina` (`idcurso_has_propina`);
 
 --
 -- Indexes for table `inscricao`
 --
 ALTER TABLE `inscricao`
   ADD PRIMARY KEY (`idinscricao`),
+  ADD UNIQUE KEY `processo` (`processo`),
   ADD KEY `fk_inscricao_turma1_idx` (`turma_idturma`),
   ADD KEY `fk_inscricao_periodo1_idx` (`periodo_idperiodo`),
   ADD KEY `fk_inscricao_curso1_idx` (`curso_idcurso`),
@@ -6602,9 +6819,10 @@ ALTER TABLE `inscricao`
 -- Indexes for table `inscricao_has_disciplina`
 --
 ALTER TABLE `inscricao_has_disciplina`
-  ADD PRIMARY KEY (`inscricao_idinscricao`,`disciplina_iddisciplina`),
+  ADD PRIMARY KEY (`id_nota`),
   ADD KEY `fk_inscricao_has_disciplina_disciplina1_idx` (`disciplina_iddisciplina`),
-  ADD KEY `fk_inscricao_has_disciplina_inscricao1_idx` (`inscricao_idinscricao`);
+  ADD KEY `fk_inscricao_has_disciplina_inscricao1_idx` (`inscricao_idinscricao`),
+  ADD KEY `avaliacao_id` (`avliacao_id`);
 
 --
 -- Indexes for table `localidades`
@@ -6639,6 +6857,13 @@ ALTER TABLE `nota_recepcao_entrada`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `pagamento`
+--
+ALTER TABLE `pagamento`
+  ADD PRIMARY KEY (`idpagamento`),
+  ADD KEY `idfactura_has_propina` (`idfactura_has_propina`);
+
+--
 -- Indexes for table `periodo`
 --
 ALTER TABLE `periodo`
@@ -6663,6 +6888,13 @@ ALTER TABLE `postos`
 ALTER TABLE `povoado_aldeia_zona_unidade`
   ADD PRIMARY KEY (`id`),
   ADD KEY `povoado_aldeia_zona_unidade_bairro_id_foreign` (`bairro_id`);
+
+--
+-- Indexes for table `propina`
+--
+ALTER TABLE `propina`
+  ADD PRIMARY KEY (`idpropinas`),
+  ADD KEY `empresa_id` (`empresa_id`);
 
 --
 -- Indexes for table `provincias`
@@ -6718,6 +6950,11 @@ ALTER TABLE `armazem`
 ALTER TABLE `artigo`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
+-- AUTO_INCREMENT for table `avaliacao`
+--
+ALTER TABLE `avaliacao`
+  MODIFY `id_avaliacao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
 -- AUTO_INCREMENT for table `bairros`
 --
 ALTER TABLE `bairros`
@@ -6738,10 +6975,15 @@ ALTER TABLE `classes`
 ALTER TABLE `curso`
   MODIFY `idcurso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
+-- AUTO_INCREMENT for table `curso_has_propina`
+--
+ALTER TABLE `curso_has_propina`
+  MODIFY `idcurso_has_propina` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
 -- AUTO_INCREMENT for table `departamento`
 --
 ALTER TABLE `departamento`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `disciplina`
 --
@@ -6761,12 +7003,27 @@ ALTER TABLE `empresa`
 -- AUTO_INCREMENT for table `estudante`
 --
 ALTER TABLE `estudante`
-  MODIFY `idestudante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idestudante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+--
+-- AUTO_INCREMENT for table `factura`
+--
+ALTER TABLE `factura`
+  MODIFY `idfactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `factura_has_propina`
+--
+ALTER TABLE `factura_has_propina`
+  MODIFY `idfactura_has_propina` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `inscricao`
 --
 ALTER TABLE `inscricao`
-  MODIFY `idinscricao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idinscricao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+--
+-- AUTO_INCREMENT for table `inscricao_has_disciplina`
+--
+ALTER TABLE `inscricao_has_disciplina`
+  MODIFY `id_nota` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `localidades`
 --
@@ -6793,6 +7050,11 @@ ALTER TABLE `nota_recepcao`
 ALTER TABLE `nota_recepcao_entrada`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
+-- AUTO_INCREMENT for table `pagamento`
+--
+ALTER TABLE `pagamento`
+  MODIFY `idpagamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+--
 -- AUTO_INCREMENT for table `periodo`
 --
 ALTER TABLE `periodo`
@@ -6812,6 +7074,11 @@ ALTER TABLE `postos`
 --
 ALTER TABLE `povoado_aldeia_zona_unidade`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5040;
+--
+-- AUTO_INCREMENT for table `propina`
+--
+ALTER TABLE `propina`
+  MODIFY `idpropinas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `provincias`
 --
@@ -6860,11 +7127,24 @@ ALTER TABLE `artigo_armazem`
   ADD CONSTRAINT `artigo_armazem_ibfk_2` FOREIGN KEY (`id_artigo`) REFERENCES `artigo` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `categoria_disciplina`
+--
+ALTER TABLE `categoria_disciplina`
+  ADD CONSTRAINT `departamento_id` FOREIGN KEY (`departamento_id`) REFERENCES `departamento` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `curso_has_disciplina`
 --
 ALTER TABLE `curso_has_disciplina`
   ADD CONSTRAINT `fk_curso_has_disciplina_curso1` FOREIGN KEY (`curso_idcurso`) REFERENCES `curso` (`idcurso`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_curso_has_disciplina_disciplina1` FOREIGN KEY (`disciplina_iddisciplina`) REFERENCES `disciplina` (`iddisciplina`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `curso_has_propina`
+--
+ALTER TABLE `curso_has_propina`
+  ADD CONSTRAINT `curso_idcurso_fky` FOREIGN KEY (`curso_idcurso`) REFERENCES `curso` (`idcurso`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `propina_idpropinas_fky` FOREIGN KEY (`propina_idpropinas`) REFERENCES `propina` (`idpropinas`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `departamento`
@@ -6885,6 +7165,20 @@ ALTER TABLE `distritos`
   ADD CONSTRAINT `distritos_provincia_id_foreign` FOREIGN KEY (`provincia_id`) REFERENCES `provincias` (`id`);
 
 --
+-- Constraints for table `factura`
+--
+ALTER TABLE `factura`
+  ADD CONSTRAINT `curso_idcurso` FOREIGN KEY (`curso_idcurso`) REFERENCES `curso` (`idcurso`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `inscricao_idinscricao` FOREIGN KEY (`inscricao_idinscricao`) REFERENCES `inscricao` (`idinscricao`);
+
+--
+-- Constraints for table `factura_has_propina`
+--
+ALTER TABLE `factura_has_propina`
+  ADD CONSTRAINT `factura_idfactura` FOREIGN KEY (`factura_idfactura`) REFERENCES `factura` (`idfactura`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `idcurso_has_propina` FOREIGN KEY (`idcurso_has_propina`) REFERENCES `curso_has_propina` (`idcurso_has_propina`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `inscricao`
 --
 ALTER TABLE `inscricao`
@@ -6897,6 +7191,7 @@ ALTER TABLE `inscricao`
 -- Constraints for table `inscricao_has_disciplina`
 --
 ALTER TABLE `inscricao_has_disciplina`
+  ADD CONSTRAINT `avliacao_id` FOREIGN KEY (`avliacao_id`) REFERENCES `avaliacao` (`id_avaliacao`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_inscricao_has_disciplina_disciplina1` FOREIGN KEY (`disciplina_iddisciplina`) REFERENCES `disciplina` (`iddisciplina`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_inscricao_has_disciplina_inscricao1` FOREIGN KEY (`inscricao_idinscricao`) REFERENCES `inscricao` (`idinscricao`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -6913,6 +7208,12 @@ ALTER TABLE `niveis_acessos`
   ADD CONSTRAINT `fk_niveis_acessos_departamento1` FOREIGN KEY (`departamento_id`) REFERENCES `departamento` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `pagamento`
+--
+ALTER TABLE `pagamento`
+  ADD CONSTRAINT `idfactura_has_propina` FOREIGN KEY (`idfactura_has_propina`) REFERENCES `factura_has_propina` (`idfactura_has_propina`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `postos`
 --
 ALTER TABLE `postos`
@@ -6923,6 +7224,12 @@ ALTER TABLE `postos`
 --
 ALTER TABLE `povoado_aldeia_zona_unidade`
   ADD CONSTRAINT `povoado_aldeia_zona_unidade_bairro_id_foreign` FOREIGN KEY (`bairro_id`) REFERENCES `bairros` (`id`);
+
+--
+-- Constraints for table `propina`
+--
+ALTER TABLE `propina`
+  ADD CONSTRAINT `empresa_id` FOREIGN KEY (`empresa_id`) REFERENCES `empresa` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `provincias`
