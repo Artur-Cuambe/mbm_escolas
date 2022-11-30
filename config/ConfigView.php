@@ -34,6 +34,12 @@ class ConfigView {
         endif;
     }
 
+    public function renderizarModule() {
+        if (file_exists('modules/' . $this->Nome . '.php')):
+            include 'modules/' . $this->Nome . '.php';
+        endif;
+    }
+
     public function renderizarHome() {
         include 'views/include/home/header.php';
         include 'views/include/menu.php';
@@ -48,8 +54,8 @@ class ConfigView {
     public function renderizarListar() {
         include 'views/include/listar/header.php';
         include 'views/include/menu.php';
-        if (file_exists('views/' . $this->Nome . '.php')):
-            include 'views/' . $this->Nome . '.php';
+        if (file_exists('modules/' . $this->Nome . '.php')):
+            include 'modules/' . $this->Nome . '.php';
         else:
             echo "Erro ao carregar a VIEW: {$this->Nome}";
         endif;

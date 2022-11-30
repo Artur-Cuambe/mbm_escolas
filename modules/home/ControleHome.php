@@ -3,7 +3,7 @@
 /**
  * Descricao de ControleHome
  *
- * @copyright (c) year, Cesar Szpak - Celke
+ * @copyright (c) 2022, Artur Cuambe
  */
 class ControleHome {
     
@@ -13,7 +13,7 @@ class ControleHome {
         $ListarMenu = new ModelsMenu();
         $this->Menu = $ListarMenu->listar();
         
-        $CarregarView = new ConfigView("home/home", $this->Menu);
+        $CarregarView = new ConfigView("home/views/home", $this->Menu);
         $CarregarView->renderizarListar();
     }
 }

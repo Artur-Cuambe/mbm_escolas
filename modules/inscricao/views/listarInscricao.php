@@ -51,8 +51,10 @@
                             </thead>
                             <tbody>
                                 <?php
+                                $i=0;
                                         foreach ($this->Dados as $nivelAcesso) :
                                             extract($nivelAcesso);
+                                            $i++;
                                             ?>
                                 <tr>
                                     <td><?php echo $processo; ?></td>

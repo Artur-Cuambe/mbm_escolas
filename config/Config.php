@@ -2,7 +2,7 @@
 date_default_timezone_set('Africa/Maputo');
 session_start();
 ob_start();
-define('URL', 'http://localhost/sis_stock/');
+define('URL', 'http://localhost/mbm_escolas/');
 
 define('CONTROLER', 'controle-login');
 define('METODO', 'login');
@@ -11,7 +11,7 @@ define('METODO', 'login');
 define('HOST', 'localhost');
 define('USER', 'root');
 define('PASS', 'vertrigo');
-define('DBNAME', 'sis_stock');
+define('DBNAME', 'mbm_escolas');
 
 function __autoload($Class) {
     $dirName = array(
@@ -19,7 +19,13 @@ function __autoload($Class) {
         'models',
         'models/helper',
         'views',
-        'config'
+        'config',
+        'modules/estudante',
+        'modules/estudante/views',
+        'modules/inscricao',
+        'modules/inscricao/views',
+        'modules/home',
+        'modules/home/views',
     );
     foreach ($dirName as $diretorios) {
         if (file_exists("{$diretorios}/{$Class}.php")):

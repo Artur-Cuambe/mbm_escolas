@@ -102,8 +102,9 @@ class ModelsLogin {
 
     public function cadastrarClasse() {
         $this->listarNiveisAcesso();
-        //var_dump($this->NiveisAcesso);
-        //echo "Listar Classe<br>";
+        // var_dump($this->NiveisAcesso);
+        // echo "Listar Classe<br>";
+        // die;
         $this->Diretorio = "controllers/";
         foreach (new DirectoryIterator($this->Diretorio) as $Classe) {
             if (($Classe != ".") && ($Classe != "..")):

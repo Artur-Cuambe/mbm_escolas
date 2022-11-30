@@ -30,6 +30,7 @@
                     endif;
                        $paginacao = $this->Dados[1];
                        $this->Dados = $this->Dados[0];
+                    //    var_dump($_SESSION['id_empresa']);
                     if (!empty($this->Dados)):
                         ?>
                     <div class="table-responsive">
@@ -39,19 +40,29 @@
                                     <th>ID</th>
                                     <th>Nome</th>
                                     <th>Gênero</th>
+                                    <th>Idade</th>
+                                    <th>Endereço</th>
+                                    <th>Telefone</th>
+                                    <th>E-mail</th>
                                     <th class="">Estado da última inscrição</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
+                                $i=0;
                                     foreach ($this->Dados as $estudante) {
                                         extract($estudante);
-                                        ?>
+                                        $i++;
+                                 ?>
                                 <tr>
-                                    <td><?php echo $idestudante; ?></td>
+                                    <td><?php echo $i; ?></td>
                                     <td><?php echo $nome; ?></td>
                                     <td><?php echo $genero; ?></td>
+                                    <td><?php echo calcularIdade($data_nascimento);?></td>
+                                    <td><?php echo $residencia; ?></td>
+                                    <td><?php echo $telefone; ?></td>
+                                    <td><?php echo $email; ?></td>
                                     <td><?php echo utf8_encode($estado_inscricao); ?></td>
                                     <td class="text-right">
                                         <div class="btn-group pull-right">
@@ -89,3 +100,28 @@
         $('#dataTables-example').dataTable();
     });
 </script>
+
+<?php 
+
+function calcularIdade($data){
+    $idade = 0;
+    $data_nascimento = date('Y-m-d', strtotime($data));
+       $data = explode("-",$data_nascimento);
+       $anoNasc    = $data[0];
+       $mesNasc    = $data[1];
+       $diaNasc    = $data[2];
+    
+       $anoAtual   = date("Y");
+       $mesAtual   = date("m");
+       $diaAtual   = date("d");
+    
+       $idade      = $anoAtual - $anoNasc;
+       if ($mesAtual < $mesNasc){
+           $idade -= 1;
+       } elseif ( ($mesAtual == $mesNasc) && ($diaAtual <= $diaNasc) ){
+           $idade -= 1;
+       }
+    
+       return $idade;
+   }
+?>

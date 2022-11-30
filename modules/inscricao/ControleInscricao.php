@@ -17,8 +17,8 @@ class ControleInscricao {
         $ListarArtigos = new ModelsInscricao();
         $this->Dados = $ListarArtigos->listar($this->PageId);
 
-        $CarregarView = new ConfigView("inscricao/listarInscricao", $this->Menu, $this->Dados);
-        $CarregarView->renderizarlogin();
+        $CarregarView = new ConfigView("inscricao/views/listarInscricao", $this->Menu, $this->Dados);
+        $CarregarView->renderizarModule();
     }
 
     public function visualizar($inscricaoId = null) {
@@ -27,8 +27,8 @@ class ControleInscricao {
             $VerArtigo = new ModelsInscricao();
             $this->Dados = $VerArtigo->visualizar($this->inscricaoId);
             if ($VerArtigo->getResultado()):
-                $CarregarView = new ConfigView('inscricao/visualizarInscricao', NULL, $this->Dados);
-                $CarregarView->renderizarlogin();
+                $CarregarView = new ConfigView('inscricao/views/visualizarInscricao', NULL, $this->Dados);
+                $CarregarView->renderizarModule();
             else:
                 $_SESSION['msg'] = "<div class='alert alert-danger'>Necessário selecionar um estudante!</div>";
                 $UrlDestino = URL . 'controle-inscricao/index';
@@ -41,7 +41,7 @@ class ControleInscricao {
         endif;
     }
 
-    public function cadastrar() {
+    public function cadastrar($estudanteId = null) {
         $this->Dados = filter_input_array(INPUT_POST, FILTER_DEFAULT);
         $CadArtigo = new ModelsInscricao();
         if (isset($this->Dados['basic-form'])):
@@ -49,7 +49,9 @@ class ControleInscricao {
             $CadArtigo->cadastrar($this->Dados);
             $this->inscricaoId = $CadArtigo->getResultado();
             if (!$CadArtigo->getResultado()):
-                $_SESSION['msg'] = "<div class='alert alert-danger'><b>Erro ao cadastrar: </b>Para cadastrar o estudante preencha todos os campos!</div>";
+                $_SESSION['msg'] = "<div class='alert alert-danger'><b>Erro ao cadastrar: </b>Para inscrever o estudante preencha todos os campos!</div>";
+            elseif($CadArtigo->getMsg()!=NULL):
+                    $_SESSION['msg'] = "<div class='alert alert-danger'>{$CadArtigo->getMsg()}</div>";
             else:
                 $_SESSION['msg'] = "<div class='alert alert-success'>Estudante inscrito com sucesso!</div>";
                 $UrlDestino = URL . 'controle-inscricao/visualizar/' . $this->inscricaoId;
@@ -58,9 +60,9 @@ class ControleInscricao {
         endif;
 
         $Registro = $CadArtigo->listarCadastrar();
-        $this->Dados = array($Registro[0],$Registro[1],$Registro[2],$Registro[3], $this->Dados);
-        $CarregarView = new ConfigView("inscricao/cadastrarInscricao", NULL, $this->Dados);
-        $CarregarView->renderizarlogin();
+        $this->Dados = array($Registro[0],$Registro[1],$Registro[2],$Registro[3], $this->Dados,$estudanteId);
+        $CarregarView = new ConfigView("inscricao/views/cadastrarInscricao", NULL, $this->Dados);
+        $CarregarView->renderizarModule();
     }
 
     public function editar($inscricaoId = null) {
@@ -72,8 +74,8 @@ class ControleInscricao {
             $EditaArtigo = new ModelsInscricao();
             $Registro = $EditaArtigo->listarCadastrar();
             $this->Dados = array($Registro[0],$Registro[1],$Registro[2],$Registro[3], $this->Dados);
-            $CarregarView = new ConfigView('inscricao/editarInscricao', NULL, $this->Dados);
-            $CarregarView->renderizarlogin();
+            $CarregarView = new ConfigView('inscricao/views/editarInscricao', NULL, $this->Dados);
+            $CarregarView->renderizarModule();
 
         else:
             $_SESSION['msg'] = "<div class='alert alert-danger'>Necessário selecionar um estudante</div>";

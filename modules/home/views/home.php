@@ -9,11 +9,10 @@
                 </center>
             </div>
         </div>
-        <hr />
+        <hr style="border-color:#174d7b"/>
         <div class="row">
             <div class="col-lg-12">
                 <div style="text-align: center;">
-
                     <a class="quick-btn" href="#"
                         onclick="enviaDados('<?php echo URL; ?>controle-inscricao/index',null,'content')">
                         <i class="icon-book icon-2x"></i>
@@ -57,13 +56,14 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-3">
-                <img src="<?php echo URL; ?>assets/img/log.png" style="opacity: .1;" alt="" />
+            <div class="col-lg-2">
+                <img src="<?php echo URL; ?>assets/img/log.png" 
+                style="opacity: .1;" alt="" />
             </div>
-            <div class="col-lg-1"></div>
+            <div class="col-lg-2"></div>
             <div class="col-lg-6">
                 <br>
-                <img src="<?php echo URL; ?>assets/img/log.png" width="600" alt="" />
+                <img src="<?php echo URL; ?>assets/img/log.png" width="500" alt="" style="opacity: .1;"/>
             </div>
 
         </div>

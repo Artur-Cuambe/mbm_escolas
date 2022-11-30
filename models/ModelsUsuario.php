@@ -35,13 +35,27 @@ class ModelsUsuario {
         $this->ResultadoPaginacao = $Paginacao->paginacao('users');
 
         $Listar = new ModelsRead();
-        $Listar->ExeRead('users', 'LIMIT :limit OFFSET :offset', "limit={$Paginacao->getLimiteResultado()}&offset={$Paginacao->getOffset()}");
+        $Listar->fullRead("SELECT
+        users.`name`,
+        users.id,
+        users.niveis_acesso_id,
+        users.email,
+        users.foto,
+        users.estado,
+        users.created,
+        users.modified,
+        niveis_acessos.nome_niveis_acesso
+        FROM
+        users
+        INNER JOIN niveis_acessos ON users.niveis_acesso_id = niveis_acessos.id
+        INNER JOIN departamento ON niveis_acessos.departamento_id = departamento.id
+        WHERE empresa_id = {$_SESSION['id_empresa']}");
         if ($Listar->getResultado()):
             $this->Resultado = $Listar->getResultado();
             return array($this->Resultado, $this->ResultadoPaginacao);
         else:
             //echo "Nenhum usuário encontrado<br>";
-            $Paginacao->paginaInvalida();
+            // $Paginacao->paginaInvalida();
         endif;
     }
 
@@ -99,7 +113,13 @@ class ModelsUsuario {
 
     public function listarCadastrar() {
         $Listar = new ModelsRead();
-        $Listar->ExeRead('niveis_acessos');
+        $Listar->fullRead("SELECT
+        niveis_acessos.id,
+        niveis_acessos.nome_niveis_acesso,
+        departamento.empresa_id
+        FROM
+        niveis_acessos
+        INNER JOIN departamento ON niveis_acessos.departamento_id = departamento.id WHERE empresa_id = {$_SESSION['id_empresa']}");
         $NivelAcesso = $Listar->getResultado();
         //var_dump($NivelAcesso);
         $Listar->ExeRead('situacoes_users');
