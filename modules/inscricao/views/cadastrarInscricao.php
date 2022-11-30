@@ -20,7 +20,7 @@
         <?php
         if (isset($_SESSION['msg'])):
             echo $_SESSION['msg'];
-          // unset($_SESSION['msg']);
+          unset($_SESSION['msg']);
         endif;
         if (isset($_SESSION['msgcad'])):
             echo $_SESSION['msgcad'];
@@ -47,6 +47,13 @@
             $valorForm = $this->Dados[4];
         //var_dump($valorForm);
         endif;
+        if (isset($this->Dados[5])):
+            $estudanteId = $this->Dados[5];
+        // var_dump($estudanteId);
+        else:
+            $estudanteId = null;
+            // var_dump($estudanteId);
+        endif;
         $anos = date('Y')+1;
         ?>
         <form name="basic-form" id="basic-form" action="" method="post" enctype="multipart/form-data" novalidate>
@@ -62,8 +69,7 @@
             <div class="form-group row">
                 <label for="ano" class="col-sm-3 col-form-label">Ano</label>
                 <div class="col-sm-9">
-                    <select class="form-control  select-basic " name="ano" id="ano"
-                        required style="width: 100%;">
+                    <select class="form-control  select-basic " name="ano" id="ano" required style="width: 100%;">
                         <option value="">Selecione</option>
                         <?php
                         for ($i=0; $i < date('y'); $i++) { 
@@ -82,8 +88,25 @@
             <div class="form-group row">
                 <label for="estudante_idestudante" class="col-sm-3 col-form-label">Estudante</label>
                 <div class="col-sm-9">
-                    <select class="form-control  select-basic " name="estudante_idestudante" id="estudante_idestudante"
-                        required style="width: 100%;">
+                    <?php if($estudanteId != NULL): ?>
+                    <select class="form-control  select-basic " <?php  echo 'disabled'; ?> name="estudante_idestudante"
+                        id="estudante_idestudante" required style="width: 100%;">
+                        <option value="">Selecione</option>
+                        <?php
+                        foreach ($estudantes as $estudante):
+                            extract($estudante);
+                            if ($estudanteId = $idestudante):
+                                $selecionado = "selected";
+                            else:
+                                $selecionado = "";
+                            endif;
+                            echo "<option value='$idestudante' $selecionado>$nome</option>";
+                        endforeach;
+                        ?>
+                    </select>
+                    <?php else: ?>
+                    <select class="form-control  select-basic "
+                        name="estudante_idestudante" id="estudante_idestudante" required style="width: 100%;">
                         <option value="">Selecione</option>
                         <?php
                         foreach ($estudantes as $estudante):
@@ -97,6 +120,7 @@
                         endforeach;
                         ?>
                     </select>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="form-group row">
@@ -160,14 +184,18 @@
                 </div>
             </div>
             <input type="hidden" name="created" value="<?php echo date("Y-m-d H:i:s"); ?>">
+            <input type="hidden" name="empresa_id" value="<?php echo $_SESSION['id_empresa']; ?>">
             <input type="hidden" name="basic-form" value="Dados">
+            <?php if($estudanteId != NULL):?>
+            <input type="hidden" name="estudante_idestudante" value="<?php echo $estudanteId; ?>">
+            <?php endif; ?>
 
             <div class="form-group row">
                 <div class="col-sm-3"></div>
                 <div class="col-sm-6">
                     <button type="button" id='refresh' class="btn btn-primary btn-block"
                         onclick="enviarDados('<?php echo URL; ?>controle-inscricao/cadastrar/', 'basic-form')"
-                        value="REGISTAR" name="basic-form">REGISTAR</button>
+                        value="Salvar" name="basic-form">Salvar</button>
                 </div>
             </div>
         </form>

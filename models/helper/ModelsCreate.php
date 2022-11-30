@@ -46,9 +46,13 @@ class ModelsCreate extends ModelsConn{
         try {
             $this->Query->execute($this->Dados);
             $this->Resultado = $this->Conn->lastInsertId();
+            // var_dump($this->Resultado);
         } catch (Exception $e) {
-            $this->Resultado = null;
-            $this->Msg = "<b>Erro ao Cadastrar: </b> {$e->getMessage()}";
+            $this->Resultado = false;
+            $msg = explode(":",$e->getMessage())[2];
+            // $msg = explode(":",$msg)[0];
+            $this->Msg = "<b>Erro ao Cadastrar: </b> {$msg}";
+         
         }
     }
     

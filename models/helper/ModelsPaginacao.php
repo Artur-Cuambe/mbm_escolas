@@ -37,7 +37,7 @@ class ModelsPaginacao {
     function __construct($Link) {
         $this->Link = $Link;
         $this->MaxLinks = 2;
-        //echo "Link da página {$this->Link}<br>";
+        // echo "Link da página {$this->Link}<br>";
     }
 
     public function condicao($Pagina, $LimiteResultado) {

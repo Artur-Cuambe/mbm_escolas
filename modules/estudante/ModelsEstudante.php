@@ -27,17 +27,19 @@ class ModelsEstudante {
 
     public function listar($PageId) {
         $Paginacao = new ModelsPaginacao(URL . 'controle-estudante/index/');
-        $Paginacao->condicao($PageId, 10);
+        $Paginacao->condicao($PageId, 1000);
         $this->ResultadoPaginacao = $Paginacao->paginacao($this->getQueryEsctudante());
-        // var_dump($Paginacao->getLimiteResultado());
+        // var_dump($this->ResultadoPaginacao);
+        // die;
         $Listar = new ModelsRead();
-        $Listar->fullRead("{$this->getQueryEsctudante()} LIMIT   {$Paginacao->getOffset()}, {$Paginacao->getLimiteResultado()}");
-        //var_dump($Listar->getResultado());
+        $Listar->fullRead("{$this->getQueryEsctudante()} ORDER BY estudante.idestudante desc LIMIT   {$Paginacao->getOffset()}, {$Paginacao->getLimiteResultado()} ");
+        // var_dump($Listar->getResultado());
+        // die;
         if ($Listar->getResultado()):
             $this->Resultado = $Listar->getResultado();
             return array($this->Resultado, $this->ResultadoPaginacao);
         else:
-            $Paginacao->paginaInvalida();
+            // $Paginacao->paginaInvalida();
         endif;
     }
     // public function listar() {
@@ -60,7 +62,8 @@ class ModelsEstudante {
     private function inserir() {
         $Create = new ModelsCreate;
         $Create->ExeCreate('estudante', $this->Dados);
-        if ($Create->getResultado()):
+        $this->Msg = $Create->getMsg();
+        if ($Create->getMsg()===NULL):
             $this->Resultado = $Create->getResultado();
         endif;
     }
@@ -154,7 +157,7 @@ class ModelsEstudante {
         return $this->Resultado;
     }
 
-    private function getQueryEsctudante(){
+    public function getQueryEsctudante(){
        return "SELECT
                 estudante.idestudante,
                 estudante.nome,
@@ -171,7 +174,7 @@ class ModelsEstudante {
                 estudante.created,
                 estudante.modified
             FROM
-                estudante";
+                estudante  where empresa_id = {$_SESSION['id_empresa']}";
     }
 
 }

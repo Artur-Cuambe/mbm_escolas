@@ -29,7 +29,7 @@ class ModelsInscricao {
 
     public function listar($PageId) {
         $Paginacao = new ModelsPaginacao(URL . 'controle-inscricao/index/');
-        $Paginacao->condicao($PageId, 10);
+        $Paginacao->condicao($PageId, 1000);
         $this->ResultadoPaginacao = $Paginacao->paginacao($this->getQueryInscricao());
         // var_dump($Paginacao->getLimiteResultado());
         $Listar = new ModelsRead();
@@ -39,14 +39,14 @@ class ModelsInscricao {
             $this->Resultado = $Listar->getResultado();
             return array($this->Resultado, $this->ResultadoPaginacao);
         else:
-            $Paginacao->paginaInvalida();
+            // $Paginacao->paginaInvalida();
         endif;
     }
 
     public function visualizar($inscricaoId) {
         $this->inscricaoId = (int) $inscricaoId;
         $Visualizar = new ModelsRead();
-        $Visualizar->fullRead("{$this->getQueryInscricao()} where idinscricao={$this->inscricaoId} limit 1");
+        $Visualizar->fullRead("{$this->getQueryInscricao()} and idinscricao={$this->inscricaoId} limit 1");
         // var_dump("{$this->getQueryInscricao()} where idinscricao={$this->inscricaoId} limit 1");
         $this->Resultado = $Visualizar->getResultado();
         $this->RowCount = $Visualizar->getRowCount();
@@ -54,6 +54,7 @@ class ModelsInscricao {
     }
 
     public function listarCadastrar() {
+        $query_estusante = new ModelsEstudante();
         $Listar = new ModelsRead();
         $Listar->ExeRead('turma');
         $turma = $Listar->getResultado();
@@ -61,7 +62,7 @@ class ModelsInscricao {
         $periodo = $Listar->getResultado();
         $Listar->ExeRead('curso');
         $curso = $Listar->getResultado();
-        $Listar->ExeRead('estudante');
+        $Listar->fullRead("{$query_estusante->getQueryEsctudante()}");
         $estudante = $Listar->getResultado();
         $this->Resultado = array($turma,$periodo,$curso,$estudante);
         return $this->Resultado;
@@ -87,7 +88,8 @@ class ModelsInscricao {
     private function inserir() {
         $Create = new ModelsCreate;
         $Create->ExeCreate('inscricao', $this->Dados);
-        if ($Create->getResultado()):
+        $this->Msg = $Create->getMsg();
+        if ($Create->getMsg()===NULL):
             $this->Resultado = $Create->getResultado();
         endif;
     }
@@ -154,7 +156,7 @@ class ModelsInscricao {
         INNER JOIN periodo ON inscricao.periodo_idperiodo = periodo.idperiodo
         INNER JOIN estudante ON inscricao.estudante_idestudante = estudante.idestudante
         INNER JOIN curso ON inscricao.curso_idcurso = curso.idcurso 
-        INNER JOIN departamento ON curso.departamento_id = departamento.id";
+        INNER JOIN departamento ON curso.departamento_id = departamento.id  where inscricao.empresa_id = {$_SESSION['id_empresa']}";
     }
 
 }
